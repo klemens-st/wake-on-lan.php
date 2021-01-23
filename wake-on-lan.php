@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * PHPWOL - Send wake on lan magic packet from php.
  * PHP Version 5.6.28
  * @package PHPWOL
@@ -26,44 +26,44 @@ function wakeOnLan($mac, $ip, $cidr, $port, &$debugOut) {
 	// Initialize the result. If FALSE then everything went ok.
 	$wolResult = false;
 	// Initialize the debug output return
-	$debugOut = [];  
+	$debugOut = [];
 	// Initialize the magic packet
 	$magicPacket = str_repeat(chr(0xFF), 6);
-			
-	$debugOut[] = __LINE__ . " : wakeupOnLan('$mac', '$ip', '$cidr', '$port' );"; 
-	
-	// Test if socket support is available
-	if(!$wolResult && !extension_loaded('sockets')) {
-		$wolResult = 'Error: Extension <strong>php_sockets</strong> is not loaded! You need to enable it in <strong>php.ini</strong>';
-		$debugOut[] = __LINE__ . ' : ' . $wolResult;
-	}
 
-	// Test if UDP datagramm support is avalable	
-	if(!array_search('udp', stream_get_transports())) {
-		$wolResult = 'Error: Cannot send magic packet! Tranport UDP is not supported on this system.';
-		$debugOut[] = __LINE__ . ' : ' . $wolResult;
-	}
+	$debugOut[] = __LINE__ . " : wakeupOnLan('$mac', '$ip', '$cidr', '$port' );";
+
+	// Test if socket support is available
+	// if(!$wolResult && !extension_loaded('sockets')) {
+	// 	$wolResult = 'Error: Extension <strong>php_sockets</strong> is not loaded! You need to enable it in <strong>php.ini</strong>';
+	// 	$debugOut[] = __LINE__ . ' : ' . $wolResult;
+	// }
+
+	// Test if UDP datagramm support is avalable
+	// if(!array_search('udp', stream_get_transports())) {
+	// 	$wolResult = 'Error: Cannot send magic packet! Tranport UDP is not supported on this system.';
+	// 	$debugOut[] = __LINE__ . ' : ' . $wolResult;
+	// }
 
 	// Validate the mac address
 	if(!$wolResult) {
-		$debug[] = __LINE__ . ' : Validating mac address: ' . $mac; 
-		$mac = str_replace(':','-',strtoupper($mac));
-		if ((!preg_match("/([A-F0-9]{2}[-]){5}([0-9A-F]){2}/",$mac)) || (strlen($mac) != 17)) {
+		$debug[] = __LINE__ . ' : Validating mac address: ' . $mac;
+		$mac = str_replace('-',':',strtoupper($mac));
+		if ((!preg_match("/([A-F0-9]{2}[:]){5}([0-9A-F]){2}/",$mac)) || (strlen($mac) != 17)) {
 			$wolResult = 'Error: Invalid MAC-address: ' . $mac;
 			$debugOut[] = __LINE__ . ' : ' . $wolResult;
 		}
 	}
 
 	// Finish the magic packet
-	if(!$wolResult) {
-		$debugOut[] = __LINE__ . ' : Creating the magic paket'; 
-		$hwAddress = '';
-		foreach( explode('-', $mac) as $addressByte) {
-			$hwAddress .= chr(hexdec($addressByte)); 
-		}
-		$magicPacket .= str_repeat($hwAddress, 16);
-	}
-		
+	// if(!$wolResult) {
+	// 	$debugOut[] = __LINE__ . ' : Creating the magic paket';
+	// 	$hwAddress = '';
+	// 	foreach( explode('-', $mac) as $addressByte) {
+	// 		$hwAddress .= chr(hexdec($addressByte));
+	// 	}
+	// 	$magicPacket .= str_repeat($hwAddress, 16);
+	// }
+
 	// Resolve the hostname if not an ip address
 	if(!$wolResult && !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ) {
 		$debugOut[] = __LINE__ . ' : Resolving host :' . $ip;
@@ -75,114 +75,59 @@ function wakeOnLan($mac, $ip, $cidr, $port, &$debugOut) {
 			$ip = $tmpIp; // Use the ip address
 		}
 	}
-		
+
 	// If $cidr is not empty we will use the broadcast address rather than the supplied ip address
-	if(!$wolResult && '' != $cidr ) {
-		$debugOut[] = __LINE__ . ' : CIDR is set to ' . $cidr . '. Will use broadcast address.';
-		$cidr = intval($cidr);
-		if($cidr < 0 || $cidr > 32) {
-			$wolResult = 'Error: Invalid subnet size of ' . $cidr . '. CIDR must be between 0 and 32.';
-			$debugOut[] = __LINE__ . ' : ' . $wolResult;			
-		} else {
-		  // Create the bitmask long from the cidr value
-			$netMask = -1 << (32 - (int)$cidr);
-			// Create the network address from the long of the ip and the network bitmask
-			$networkAddress = ip2long($ip) & $netMask; 
-      // Calulate the size fo the network (number of ip addresses in the subnet)
-			$networkSize = pow(2, (32 - $cidr));
-			// Calculate the broadcast address of the network by adding the network size to the network address
-			$broadcastAddress = $networkAddress + $networkSize - 1;
+	// if(!$wolResult && '' != $cidr ) {
+	// 	$debugOut[] = __LINE__ . ' : CIDR is set to ' . $cidr . '. Will use broadcast address.';
+	// 	$cidr = intval($cidr);
+	// 	if($cidr < 0 || $cidr > 32) {
+	// 		$wolResult = 'Error: Invalid subnet size of ' . $cidr . '. CIDR must be between 0 and 32.';
+	// 		$debugOut[] = __LINE__ . ' : ' . $wolResult;
+	// 	} else {
+	// 	  // Create the bitmask long from the cidr value
+	// 		$netMask = -1 << (32 - (int)$cidr);
+	// 		// Create the network address from the long of the ip and the network bitmask
+	// 		$networkAddress = ip2long($ip) & $netMask;
+ //      // Calulate the size fo the network (number of ip addresses in the subnet)
+	// 		$networkSize = pow(2, (32 - $cidr));
+	// 		// Calculate the broadcast address of the network by adding the network size to the network address
+	// 		$broadcastAddress = $networkAddress + $networkSize - 1;
 
-			$debugOut[] = __LINE__ . ' : $netMask = ' . long2ip($netMask);
-			$debugOut[] = __LINE__ . ' : $networkAddress = ' . long2ip($networkAddress);
-			$debugOut[] = __LINE__ . ' : $networkSize = ' . $networkSize;
-			$debugOut[] = __LINE__ . ' : $broadcastAddress = ' . long2ip($broadcastAddress);
+	// 		$debugOut[] = __LINE__ . ' : $netMask = ' . long2ip($netMask);
+	// 		$debugOut[] = __LINE__ . ' : $networkAddress = ' . long2ip($networkAddress);
+	// 		$debugOut[] = __LINE__ . ' : $networkSize = ' . $networkSize;
+	// 		$debugOut[] = __LINE__ . ' : $broadcastAddress = ' . long2ip($broadcastAddress);
 
-			// Create the braodcast address from the long value and use this ip
-			$ip = long2ip($broadcastAddress);
-		}
-	}
+	// 		// Create the braodcast address from the long value and use this ip
+	// 		$ip = long2ip($broadcastAddress);
+	// 	}
+	// }
 
 	// Validate the udp port
 	if(!$wolResult && '' != $port ) {
 		$port = intval($port);
 		if($port < 0 || $port > 65535 ) {
 			$wolResult = 'Error: Invalid port value of ' . $port . '. Port must between 1 and 65535.';
-			$debugOut[] = __LINE__ . ' : ' . $wolResult;			
+			$debugOut[] = __LINE__ . ' : ' . $wolResult;
 		}
-	}		
-		
-	// Can we work with fsockopen/fwrite/fclose?
-	if(!$wolResult &&	function_exists('fsockopen') ) {
+	}
 
-		$debugOut[] = __LINE__ . " : Calling fsockopen('udp://$ip', $port, ... )";														
+	// Can we work with wakeonlan?
+	if(!$wolResult) {
 
-		// Open the socket
-		$socket = @fsockopen('udp://' . $ip, $port, $errNo, $errStr);
-		if(!$socket) {
-			$wolResult = 'Error: ' . $errNo . ' - ' . $errStr;
-			$debugOut[] = __LINE__ . ' : ' . $wolResult;											
+		$debugOut[] = __LINE__ . " : Executing 'wakeonlan' shell command ($mac)";
+		$output = `wakeonlan {$mac}`;
+		// If $output is null then something went wrong. Otherwise a 'Sending ...'
+		// meessage should be returned.
+		if (null === $output) {
+			$wolResult = 'Error: something went wrong :D';
+			$debugOut[] = __LINE__ . ' : ' . $wolResult;
 		} else {
-			$debugOut[] = __LINE__ . ' : Sending magic paket with ' . strlen($magicPacket) . ' bytes using fwrite().';														
-			// Send the magic packet
-			$writeResult = fwrite($socket, $magicPacket);
-			if(!$writeResult) {
-				$wolResult = 'Error: ' . $errNo . ' - ' . $errStr;
-				$debugOut[] = __LINE__ . ' : ' . $wolResult;												
-			}	else {
-				$debugOut[] = __LINE__ . ' : Magic packet has been send to address ' . $ip;
-			}			
-			// Clean up the socket
-			fclose($socket);
-			unset($socket);
+			$debugOut[] = __LINE__ . 'wakeonlan responded with: ' . $output;
 		}
 
-	} else 
-		
-		// Can we work with socket_create/socket_sendto/socket_close?
-		if(!$wolResult && function_exists('socket_create') ) {
-		
-			$debug[] = __LINE__ . ' : Calling socket_create(AF_INET, SOCK_DGRAM, SOL_IDP)';														
-			// Create the socket
-			$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP); // IPv4 udp datagram socket
-			if(!$socket) {				
-				$errno = socket_last_error();
-				$wolResult = 'Error: ' . $errno . ' - ' . socket_strerror($errno); 
-				$debug[] = __LINE__ . ' : ' . $wolResult;																
-			}
+	}
 
-			if(!$wolResult) {
-				$debug[] = __LINE__ . ' : Calling socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, true)';																	
-				// Set socket options
-				$socketResult = socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, true);
-				if(0 >= $socketResult) {
-					$wolResult = 'Error: ' . socket_strerror($socketResult); 
-					$debug[] = __LINE__ . ' : ' . $wolResult;													
-				}
-			}
-
-			if(!$wolResult) {
-				$debug[] = __LINE__ . ' : Sending magic packet using socket-sendto()...';																	
-			  $socket_data = socket_sendto($socket, $buf, strlen($buf), $flags, $addr, $port);
-  			if(!$socket_data) {
-					$wolResult = 'Error: ' . socket_strerror($socketResult); 
-					$debug[] = __LINE__ . ' : ' . $wolResult;													
- 				DbOut("A magic packet of ".$socket_data." bytes has been sent via UDP to IP address: ".$addr.":".$port.", using the '".$function."()' function.");
- 				}
-			}
-			
-			if($socket) {
-				socket_close($socket);
-				unset($socket);			 
-			}
-		
-	} else 
-		if(!$wolResult) {
-			$wolResult = 'Error: Cannot send magic packet. Neither fsockopen() nor'
-			           . ' socket_create() is available on this system.';
-	    $debugOut[] = __LINE__ . ' : ' . $wolResult;						
-		}
-	
   if(!$wolResult) $debugOut[] = __LINE__ . ' : Done.';
 
   return $wolResult;
@@ -203,12 +148,12 @@ function endWithJsonResponse($responseData) {
 
 	header('Content-Length: ' . strlen($jsonString) );
 	header('Content-Type: application/json');
-	
+
 	header('Expires: Mon, 26 Jul 1997 05:00:00:00 GMT');
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s'));
   header('Cache-Control: no-cache, must-revalidate');
 	header('Pragma: no-cache');
-	die($jsonString);	
+	die($jsonString);
 }
 
 
@@ -219,7 +164,7 @@ $DEBUGINFO = [];         // Array of strings containing debug information
 
 
 // Get the url parameters
-$ENABLEDEBUG = isset($_GET['debug'])   ? $_GET['debug']   : false; 
+$ENABLEDEBUG = isset($_GET['debug'])   ? $_GET['debug']   : false;
 $OP          = isset($_GET['op'])      ? $_GET['op']      : '';
 $MAC         = isset($_GET['mac'])     ? $_GET['mac']     : '';
 $IP          = isset($_GET['ip'])      ? $_GET['ip']      : '';
@@ -235,15 +180,15 @@ if('info'===$OP && '' != $IP) {
 
  $errStr = false;
  $errCode = 0;
- $waitTimeoutInSeconds = 3; 
- if($fp = @fsockopen($IP,3389,$errCode,$errStr,$waitTimeoutInSeconds)){   
+ $waitTimeoutInSeconds = 3;
+ if($fp = @fsockopen($IP,3389,$errCode,$errStr,$waitTimeoutInSeconds)){
 	  fclose($fp);
   	$responseData['isUp'] = true;
 	} else {
 	$responseData['isUp'] = false;
 	$responseData['errCode'] = $errCode;
 	$responseData['errStr'] = $errStr;
- } 
+ }
 
  return endWithJsonResponse($responseData);
 }
@@ -256,17 +201,17 @@ if('wol'===$OP && ''!==$MAC && '' != $IP) {
 	// Call to wake up the host
 	$MESSAGE = wakeOnLan($MAC, $IP, $CIDR, $PORT, $DEBUGINFO);
 
-	// If the request was with enabled debug mode then append the debug info to the response 
+	// If the request was with enabled debug mode then append the debug info to the response
 	// To enable debug mode add "&debug=1" to the url
 	if($ENABLEDEBUG) $responseData['DEBUG'] = $DEBUGINFO;
-	
+
 	// Keep the message or make it an empty string
   if(!$MESSAGE) {
 		$responseData['data'] = 'Magic packet has been sent for <strong>' . $MAC. '</strong>. Please wait for the host to come up...';
 	} else {
 		$responseData['error'] = $MESSAGE;
 	}
-	return endWithJsonResponse($responseData);	
+	return endWithJsonResponse($responseData);
 }
 
 
@@ -290,11 +235,11 @@ if(!$MESSAGE) $MESSAGE = '';
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title data-lang-ckey="wake-on-lan">Wake On LAN</title>
 
-    <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet"> 
+    <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <!--link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
- 		
+
 		<!--
     https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css
     https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css
@@ -326,11 +271,11 @@ if(!$MESSAGE) $MESSAGE = '';
       body {
         font-family: 'Varela Round', 'Segoe UI', 'Trebuchet MS', sans-serif;
       }
-  
+
 			.ui-sortable tr {
 				cursor:pointer;
 			}
-		
+
 			.ui-sortable tr:hover {
 				background:rgba(244,251,17,0.45);
 			}
@@ -381,7 +326,7 @@ if(!$MESSAGE) $MESSAGE = '';
 							<th><button class="btn btn-xs btn-block btn-default" type="button" data-toggle="modal" data-target="#importModal" data-lang-ckey="import">import...</button></th>
 						</tr>
 					</thead>
-					
+
 					<tbody></tbody>
 
 					<tfoot>
@@ -413,7 +358,7 @@ if(!$MESSAGE) $MESSAGE = '';
     </footer>
 
 	</div>
-      
+
 		</div><!-- @end: .row -->
 
   </div><!-- @end: .container -->
@@ -431,16 +376,16 @@ if(!$MESSAGE) $MESSAGE = '';
               </button>
               <h4 class="modal-title" id="myModalLabel">Export Configuration</h4>
           </div>
-            
-          <div class="modal-body">                
+
+          <div class="modal-body">
             <form class="form-horizontal" role="form">
 								<div class="col-sm-12">
 									<textarea class="form-control" id="exportData" rows="5" style="resize: vertical" ></textarea>
 									<small class="text-muted">To export your configuration copy the text from the field above and keep the configuration string.</small>
-                </div>								
-              </form>    
+                </div>
+              </form>
           </div>
-            
+
           <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
@@ -460,8 +405,8 @@ if(!$MESSAGE) $MESSAGE = '';
 							</button>
 							<h4 class="modal-title" id="myModalLabel">Import Configuration</h4>
 					</div>
-					
-					<div class="modal-body">                
+
+					<div class="modal-body">
 							<form class="form-horizontal" role="form">
 							<div class="form-group">
 								<div class="col-sm-12">
@@ -481,10 +426,10 @@ if(!$MESSAGE) $MESSAGE = '';
 								</div>
 
 								</form>
-							
-	
+
+
 					</div>
-					
+
 					<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 							<button type="button" class="btn btn-primary" id="importConfiguration" >Import</button>
@@ -515,14 +460,14 @@ $(function () { 'use strict'
     style = style || 'danger';
     dismissable = dismissable || false;
     autoClose = autoClose || 0;
-  
+
     var $alert = $([
     '<div class="alert alert-' + style + ' alert-dismissable">',
     (dismissable ? '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' : '' ),
     '<span>' + (msg || '') + '</span>',
     '</div>'
     ].join(''));
-  
+
     $('.pageNotifications').append($alert);
     if(0 < autoClose) {
       $alert.fadeTo(autoClose, 500).slideUp(500, function(){
@@ -567,7 +512,7 @@ $(function () { 'use strict'
   function saveTableToLocalStorage() {
 		// If local storage is not available then exit immediatly.
 		if(!localStorage) return;
-		var 
+		var
 		    items = $('#items tbody tr').map(function() { return $(this).data('wol'); }).get()
 			, json = JSON.stringify(items)
 			  ;
@@ -578,7 +523,7 @@ $(function () { 'use strict'
   var lastUpdateIndex = 1;
   function updateHostInfo() {
 		console.log()
-		var 
+		var
 		    $tr = $('#items tbody tr:nth-child(' + lastUpdateIndex + ')'),
 			  $i = $tr.find('td:first-child >'),
 				item = $tr.data('wol') || {},
@@ -593,7 +538,7 @@ $(function () { 'use strict'
         url: url,
        type: 'GET',
        data: null,
-       beforeSend: function(/* xhr */) { 
+       beforeSend: function(/* xhr */) {
 				$i
 				  .removeClass('glyphicon-thumbs-down glyphicon-thumbs-up text-danger text-success')
 				  .addClass('glyphicon-eye-open text-muted')
@@ -623,13 +568,13 @@ $(function () { 'use strict'
        error: function(jqXHR, textStatus, errorThrown ) {
   				pageNotify('Error ' + jqXHR.status + ' calling "GET ' + url + '":' + jqXHR.statusText, 'danger', true, 10000);
         },
-       complete: function(result) { 
+       complete: function(result) {
   			}
       });
 
 	}
 
-	$.fn.miniI18n({ 
+	$.fn.miniI18n({
 		debug: false,
     data: {
         'de-DE': {
@@ -701,19 +646,19 @@ $(function () { 'use strict'
         url: url,
        type: 'GET',
        data: { op:'wol', mac: item.mac, ip: item.ip, cidr: item.cidr, port: item.port},
-       beforeSend: function(/* xhr */) { 
+       beforeSend: function(/* xhr */) {
 			  },
        success:  function(resp) {
           if('string' === typeof resp) { resp = { error: resp }; }
           if(resp && resp.error && resp.error !== '') {
 						return pageNotify(resp.error, 'danger', true, 10000);
           }
-					pageNotify(resp.data, 'success', true, 10000);          
+					pageNotify(resp.data, 'success', true, 10000);
         },
        error: function(jqXHR, textStatus, errorThrown ) {
   				pageNotify('Error ' + jqXHR.status + ' calling "GET ' + url + '":' + jqXHR.statusText, 'danger', true, 10000);
         },
-       complete: function(result) { 
+       complete: function(result) {
   			}
       });
 
@@ -734,8 +679,8 @@ $(function () { 'use strict'
 		event.preventDefault();
 		var json = $('#importData').val()
 		  , overwrite = $('#overwriteExisting').is(':checked')
-		    ; 
-    loadTable(json, !overwrite);		
+		    ;
+    loadTable(json, !overwrite);
 		saveTableToLocalStorage();
 		return false;
 	});
@@ -746,7 +691,7 @@ $(function () { 'use strict'
 	}).disableSelection();
 
 
-  var 
+  var
 	    STORAGE_ITEMNAME = 'wolItems'
 		, msg = '<?php echo $MESSAGE; ?>';
 			;
