@@ -207,7 +207,7 @@ if('wol'===$OP && ''!==$MAC && '' != $IP) {
 
 	// Keep the message or make it an empty string
   if(!$MESSAGE) {
-		$responseData['data'] = 'Magic packet has been sent for <strong>' . $MAC. '</strong>. Please wait for the host to come up...';
+		$responseData['data'] = 'Magic packet został wysłany do <strong>' . $MAC. '</strong>. Proszę czekać na uruchomienie hosta...';
 	} else {
 		$responseData['error'] = $MESSAGE;
 	}
@@ -220,7 +220,7 @@ if(''!==$MAC && '' != $IP) {
 	// Call to wake up the host
 	$MESSAGE = wakeOnLan($MAC, $IP, $CIDR, $PORT, $DEBUG);
   // Keep the message or make it an empty string
-  if(!$MESSAGE) $MESSAGE = 'Magic packet has been sent for <strong>' . $MAC. '</strong>. Please wait for the host to come up...';
+  if(!$MESSAGE) $MESSAGE = 'Magic packet został wysłany do <strong>' . $MAC. '</strong>. Proszę czekać na uruchomienie hosta...';
 }
 
 // Keep the message or make it an empty string
@@ -351,6 +351,7 @@ if(!$MESSAGE) $MESSAGE = '';
 
        <p class="pull-left">
 			  <!-- https://www.iconfinder.com/icons/32338/flag_spain_spanish_flag_icon#size=16 -->
+        <a href="#" data-lang-switch="pl-PL"><img id="flag-pl" title="Polski" alt="Polski" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABVklEQVQ4T82TQUsCQRTH/2+0bVUIrCi8CLodPAm1uR76Bn2PPof4ZUpYpbQJgo4d0u3kpS6rUNAtiCJDF50XU0qCroKnHgPDvDfze7z3f0OYNQLAc/zaNRPTjolRqVSaPocwgHK5PEnA1O12HzOZTC709oKA53lVajabnWKxmF0F4LruFbVaLd9xHGsVQK1Wk/8A4LXbfiGfX60EKSXdVs78I3vf6g8CCC3zMiEZUMSImSYq9YakU1P4dsywBkQQpAEC0Ps8YwZY6QWTR2h8BZKqe7u+vRG3AhEB/QD0jIgQURTABFaMOBQuXt8lXTo7vr2VsAb8m1ksKEFprOazQpwY5y8fkm6OtzsHqUQ2UDr75HUYZTzBY0D9uSfp/mTz6TC3nsZw+qssAOgkuhcGwb3rXROSqXTSjKXXDGMUNSNhxf/1ZAj0hyPFQS/69qkelom2dMK/AYPPiB+zNnkBAAAAAElFTkSuQmCC"></img></a>
         <a href="#" data-lang-switch="de-DE"><img id="flag-de" title="Deutsch" alt="Deutsch" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABkUlEQVQ4jY3Ty27TQBSA4WOc2AE745mxnbEtobxCN8S5vGIfoizYFMTGkVjwAJUQm4oVrSOExIZ3qPN3EQcqtbkc6duc+XV2I/J8vBd257yJJyKvzuT9OzYajX6uVitmsxl1XbNYLI6q65q6rpnP53ie91F839/EcYxSCq01xpijtNYopYiiCM/z1jIMgtamKVmeM3GOsiwpnij3qoqiKHDOkec5xlp8329EwrCVNEWyHCkKpCz/q6rdzrlegUzcrrUpMhg08ncUtlgDLoPCQVWCm0CWgtWgDZg9DToBNYZxzNfAb+QmDFqsoUtTuszSWU1nTM/S2acMndF0iYI44sofNHIThC2JojMJnda70Bzw4gEZtkjEgyQ9zYPYA3RPgURcyaCRb5/Dll9jtvea7Z1he2dPMGzvE/gT8/7Sb+T7j7CFMZAABtCAPUD3TQLEfPgUNHJ7G24gBlQfnJL0bcz1ddDIZjP8Da+BsDc6Yd+9Yb32v4iIfSsyWU6nF8vp9N1ZqupiKWJWIuP02O88ax4BPEaWLPEaiXwAAAAASUVORK5CYII="></img></a>
         <a href="#" data-lang-switch="en-US"><img id="flag-en" title="English" alt="English" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACqklEQVQ4jY2Ta0iTARSGj1LURAVnWW3ewAxFy4Et5yxvoGQKZd7INDVn6TKvqdiypqGFpCIazghdidOo3ORLx8zmj1SwLdEmkvStUJCCknVBLfvx9kMhSDEfeDhw3sP5ceAQrcdqg95WMrIiIuvNlMvl1nK53HptdnWZd0TRTKS0DXm1vQhKa0ZJQx+EyY2Q3dXCL7EOVfeewylcjrnfWMe4+d1jcvLPMJ8oVMI1uhpxJUrsjZAjtUIFh9DryKzshm2wDHE1aih40XjtGIIRxzCMcIMxyQ1HMXGfkWdYDht6sRVROa04ltGI2IL7EKXWI+FKG4Rn65FcpoT76VoMtPdjediIBf0YFvSv8HPUhKbSawy5B11gD8XfQZS0BX7xtxEjVUCQUIuYSwr4J9YiOlcB3vFK6BQa/BgcxRfdCD4PjOLXywk0F8sY2uN/jj1T2gFemAzpsgfYF3oVmRUdcBAW4nxZG2z9LiNW9hD1tiIMc3yg2+ED3TZvDG8/iBLaxZBnSDbLFZchvVyJnYJ8SMrbQR4SSG90gNwyUFDdDeLE4+36G6JnYowhcjnFBqc0gPjpiEyrA+1OwcmcZpB9EpLyFSCbOESWtOMmeWOI+OgjPvqIBz3xUUQ2DDV19rKDb+agn/wArdEMvWkWWqMZQ6ZZ9BtZDE3NQW18j4/j0/huNMFinMJXgwkrJhYtVbcYelFZwy490sCiegJLZw8sXU9hUa33U5ca890azKs0mO9S41uPFo3ZeQwp9x9gJ4UiGIQiGAICYTjyHwMCYTgswnSAGFWurgzNLK+YN7jPllCPjTGki3KYhdQVSxJnLGbyV81yxqLkH7P+5ktZfCDXDYqj9loiDseF7LhiNy9fsYevQOwhEKzWjVzLeF6+YuLYBZGdneNm37kl/gDsSQH5dAvcewAAAABJRU5ErkJggg=="></img></a>
 			 </p>
@@ -604,11 +605,25 @@ $(function () { 'use strict'
 					'remove': 'Remove',
 					'tpl-comment': 'my notebook',
 					'add': 'Add'
+        },
+        'pl-PL': {
+					'wake-on-lan': 'Wake On LAN',
+					'mac-address': 'Adres MAC',
+					'ip-or-host': 'Adres IP lub nazwa hosta',
+					'cidr': 'Rozmiar podsieci (CIDR)',
+					'port': 'Port',
+					'comment': 'Komentarz',
+					'export': 'Eksportuj...',
+					'import': 'Importuj...',
+					'wakeup': 'Obudź!',
+					'remove': 'Usuń',
+					'tpl-comment': 'Mój laptop',
+					'add': 'Dodaj'
         }
       }
   });
 
-  $.fn.miniI18n('en-US');
+  $.fn.miniI18n('pl-PL');
 
 
   $('#addItem').on('click', function(event) {
