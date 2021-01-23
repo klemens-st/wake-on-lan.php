@@ -181,8 +181,9 @@ if('info'===$OP && '' != $IP) {
  $errStr = false;
  $errCode = 0;
  $waitTimeoutInSeconds = 3;
- if($fp = @fsockopen($IP,3389,$errCode,$errStr,$waitTimeoutInSeconds)){
-	  fclose($fp);
+
+ exec("ping -W 1 -c 1 $IP", $errStr, $errCode);
+ if(0 === $errCode) {
   	$responseData['isUp'] = true;
 	} else {
 	$responseData['isUp'] = false;
