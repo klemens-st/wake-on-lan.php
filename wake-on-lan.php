@@ -135,9 +135,6 @@ function wakeOnLan($mac, $ip, $cidr, $port, &$debugOut) {
 
 function endWithJsonResponse($responseData) {
 
-	array_walk_recursive($responseData, function(&$value, &$key) {
-		if(is_string($value)) $value = utf8_encode($value);
-	});
 
 	$jsonString = json_encode($responseData, JSON_PRETTY_PRINT);
 
@@ -147,12 +144,10 @@ function endWithJsonResponse($responseData) {
 	}
 
 	header('Content-Length: ' . strlen($jsonString) );
-	header('Content-Type: application/json');
+	header('Content-Type: application/json; charset=UTF-8');
 
-	header('Expires: Mon, 26 Jul 1997 05:00:00:00 GMT');
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s'));
   header('Cache-Control: no-cache, must-revalidate');
-	header('Pragma: no-cache');
 	die($jsonString);
 }
 
@@ -236,36 +231,9 @@ if(!$MESSAGE) $MESSAGE = '';
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title data-lang-ckey="wake-on-lan">Wake On LAN</title>
 
-    <link href="//fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-    <!--link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
-
-		<!--
-    https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css
-    https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css
-    https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css
-    https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css
-    https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css
-    https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/journal/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/sandstone/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/solar/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/spacelab/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/superhero/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/united/bootstrap.min.css
-		https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/yeti/bootstrap.min.css
-		-->
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
     <style>
       /*! Minimal styling here */
