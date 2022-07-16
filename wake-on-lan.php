@@ -291,24 +291,22 @@ if(!$MESSAGE) $MESSAGE = '';
 							<th data-lang-ckey="cidr">subnet size (CIDR)</th>
 							<th data-lang-ckey="port">port</th>
 							<th data-lang-ckey="comment">comment</th>
-							<th><button class="btn btn-xs btn-block btn-default" type="button" data-toggle="modal" data-target="#exportModal" data-lang-ckey="export">export...</button></th>
-							<th><button class="btn btn-xs btn-block btn-default" type="button" data-toggle="modal" data-target="#importModal" data-lang-ckey="import">import...</button></th>
 						</tr>
 					</thead>
 
-					<tbody></tbody>
+					<tbody>
+						<tr>
+							<td><i class="glyphicon glyphicon-thumbs-down text-danger"></i></td>'
+							<td>78:2b:cb:85:fe:8a</td>
+							<td>192.168.10.105</td>
+							<td>24</td>
+							<td></td>
+							<td>Kuchnia</td>
+							<td><button class="btn btn-xs btn-block btn-warning wakeItem" type="button" data-lang-ckey="wakeup">Wake up!</button></td>
+						</tr>
+					</tbody>
 
 					<tfoot>
-						<tr>
-	  					<td>&nbsp;</td>
-							<td><input class="form-control" id="mac" placeholder="00:00:00:00:00:00" value=""></td>
-							<td><input class="form-control" id="ip" placeholder="192.168.0.123" value=""></td>
-							<td><input class="form-control" id="cidr" placeholder="24" value=""></td>
-							<td><input class="form-control" id="port" placeholder="9" value="9"></td>
-							<td><input class="form-control" id="comment" placeholder="my notebook" value="" data-lang-pkey="tpl-comment"></td>
-							<td class="align-middle"><!-- button id="wakeItem" class="btn btn-sm btn-block btn-warning" type="button">Wake up!</button --></td>
-							<td class="align-middle"><button id="addItem" class="btn btn-sm btn-block btn-success" type="button" data-lang-ckey="add">Add</button></td>
-						</tr>
 					</tfoot>
 				</table>
 			</div>
@@ -332,82 +330,6 @@ if(!$MESSAGE) $MESSAGE = '';
 		</div><!-- @end: .row -->
 
   </div><!-- @end: .container -->
-
-
-
-	<!-- Export Modal -->
-	<div class="modal modal-wide fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModal" aria-hidden="true">
-  	<div class="modal-dialog">
-        <div class="modal-content">
-        	<div class="modal-header">
-          		<button type="button" class="close" data-dismiss="modal">
-              	<span aria-hidden="true">&times;</span>
-                <span class="sr-only">Close</span>
-              </button>
-              <h4 class="modal-title" id="myModalLabel">Export Configuration</h4>
-          </div>
-
-          <div class="modal-body">
-            <form class="form-horizontal" role="form">
-								<div class="col-sm-12">
-									<textarea class="form-control" id="exportData" rows="5" style="resize: vertical" ></textarea>
-									<small class="text-muted">To export your configuration copy the text from the field above and keep the configuration string.</small>
-                </div>
-              </form>
-          </div>
-
-          <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-    </div>
-	</div>
-
-
-	<!-- Import Modal -->
-	<div class="modal modal-wide fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModal" aria-hidden="true">
-	<div class="modal-dialog">
-			<div class="modal-content">
-					<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal">
-										 <span aria-hidden="true">&times;</span>
-										 <span class="sr-only">Close</span>
-							</button>
-							<h4 class="modal-title" id="myModalLabel">Import Configuration</h4>
-					</div>
-
-					<div class="modal-body">
-							<form class="form-horizontal" role="form">
-							<div class="form-group">
-								<div class="col-sm-12">
-									<textarea class="form-control" id="importData" rows="5" style="resize: vertical" ></textarea>
-									<small class="text-muted">To import your configuration paste the configuration string into the field above and click the [Import] button below.</small>
-								</div>
-								</div>
-
-								<div class="form-group">
-									<div class="col-sm-offset-0 col-sm-12">
-										<div class="checkbox">
-											<label>
-													<input type="checkbox" id="overwriteExisting"> Overwrite existing configuration
-											</label>
-										</div>
-									</div>
-								</div>
-
-								</form>
-
-
-					</div>
-
-					<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-primary" id="importConfiguration" >Import</button>
-					</div>
-			</div>
-	</div>
-</div>
-
 
   <!-- Script tags are placed at the end of the file to make html appearing faster -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"  crossorigin="anonymous"></script>
@@ -446,62 +368,18 @@ $(function () { 'use strict'
     }
   }
 
-
-  function addItemToTable(mac, ip, cidr, port, comment) {
-		var $item = $([
-			'<tr>'
-		, '<td><i class="glyphicon glyphicon-thumbs-down text-danger"></i></td>'
-		, '<td>', mac, '</td>'
-		, '<td>', ip, '</td>'
-		, '<td>', cidr, '</td>'
-		, '<td>', port, '</td>'
-		, '<td>', comment || '', '</td>'
-		, '<td><button class="btn btn-xs btn-block btn-warning wakeItem" type="button" data-lang-ckey="wakeup">Wake up!</button></td>'
-		, '<td><button class="btn btn-xs btn-block btn-danger removeItem" type="button" data-lang-ckey="remove">Remove</button></td>'
-		, '</tr>'
-		].join(''));
-		$item.data('wol', { mac: mac, ip: ip, cidr:cidr, port:port, comment: comment });
-    $('#items tbody').append($item);
-	}
-
-  function loadTable(json, append) {
-    json = json || '[]';
-		append = append || false;
-
-    var items = $.parseJSON( json || '[]')
-		    ;
-
-    if(!append) $('#items tbody').empty();
-		for(var i=0; i < items.length; i++) {
-			var item = items[i];
-			addItemToTable(item.mac, item.ip, item.cidr, item.port, item.comment);
-		};
-		$('#exportData').val(json);
-	}
-
-  function saveTableToLocalStorage() {
-		// If local storage is not available then exit immediatly.
-		if(!localStorage) return;
-		var
-		    items = $('#items tbody tr').map(function() { return $(this).data('wol'); }).get()
-			, json = JSON.stringify(items)
-			  ;
-		localStorage.setItem(STORAGE_ITEMNAME,json);
-		$('#exportData').val(json);
-	}
-
   var lastUpdateIndex = 1;
   function updateHostInfo() {
-		console.log()
 		var
 		    $tr = $('#items tbody tr:nth-child(' + lastUpdateIndex + ')'),
 			  $i = $tr.find('td:first-child >'),
-				item = $tr.data('wol') || {},
-				url= '?op=info&ip=' + item.ip
+			  item = {ip: $tr.children()[2].textContent,},
+			  url= '?op=info&ip=' + item.ip,
+			  rowsNo = $('#items tbody').children().length
 				;
 
     // Now table row found then reset index to 0
-    if(0===$tr.length) lastUpdateIndex = 1; else lastUpdateIndex++;
+    if(lastUpdateIndex = rowsNo) lastUpdateIndex = 1; else lastUpdateIndex++;
 
     // Make ajax request to get the state of the host
     $.ajax({
@@ -594,36 +472,17 @@ $(function () { 'use strict'
 
   $.fn.miniI18n('pl-PL');
 
-
-  $('#addItem').on('click', function(event) {
-		event.preventDefault();
-    addItemToTable($('#mac').val(), $('#ip').val(), $('#cidr').val(), $('#port').val(), $('#comment').val());
-    saveTableToLocalStorage();
-		return false;
-	});
-
-	$('#items tbody').on('click', '.removeItem', function(event) {
-		event.preventDefault();
-		var $tr = $(this).closest('tr')
-		  , item = $tr.data('wol')
-			  ;
-		$('#mac').val(item.mac);
-		$('#ip').val(item.ip);
-		$('#cidr').val(item.cidr);
-		$('#port').val(item.port);
-		$('#comment').val(item.comment);
-    $tr.remove();
-		saveTableToLocalStorage();
-		return false;
-	});
-
 	$('#items tbody').on('click', '.wakeItem', function(event) {
 		event.preventDefault();
 
 		var $tr = $(this).closest('tr'),
-		    item = $tr.data('wol'),
-				url= '?op=wol'
-			  ;
+		    item = {
+				mac: $tr.children()[1].textContent,
+				ip: $tr.children()[2].textContent,
+				cidr: $tr.children()[3].textContent,
+				port: $tr.children()[4].textContent,
+			},
+			url= '?op=wol';
 
     // Make ajax request to get the state of the host
     $.ajax({
@@ -659,34 +518,15 @@ $(function () { 'use strict'
 		return $helper;
   	};
 
-	$('#importConfiguration').on('click', function(event) {
-		event.preventDefault();
-		var json = $('#importData').val()
-		  , overwrite = $('#overwriteExisting').is(':checked')
-		    ;
-    loadTable(json, !overwrite);
-		saveTableToLocalStorage();
-		return false;
-	});
-
   $("#items tbody").sortable({
     helper: fixHelperModified,
 		stop: function(event,ui) { saveTableToLocalStorage(); }
 	}).disableSelection();
 
 
-  var
-	    STORAGE_ITEMNAME = 'wolItems'
-		, msg = '<?php echo $MESSAGE; ?>';
-			;
+  var STORAGE_ITEMNAME = 'wolItems', msg = '<?php echo $MESSAGE; ?>';
 
   if('' !== msg) pageNotify(msg, (msg.startsWith('Error') ? 'danger' : 'warning'), true, 10000);
-
-  if(!localStorage) {
-    pageNotify('<strong>Warning!</strong> Your browser does not support local storage. Changes to the list will be lost when closing the browser. You can use the export button to save the configuration string off your web browser.', 'warning', true, 10000);
-	} else {
-		loadTable(localStorage.getItem(STORAGE_ITEMNAME));
-	}
 
   updateHostInfo();
 
